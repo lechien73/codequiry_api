@@ -24,7 +24,6 @@ class Codechecker(object):
         self.api_key = api_key
 
         self.BASE_URL = "https://codequiry.com/api/v1/"
-        # self.API_UPLOAD_URL = "https://httpbin.org/post" # for testing purposes
         self.API_UPLOAD_URL = "https://codequiry.com/api/v1/check/upload"
         self.SOCKS_BASE_URL = "https://api.codequiry.com/"
 
@@ -43,7 +42,7 @@ class Codechecker(object):
         """
         url = self.BASE_URL + "account"
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
 
     def create_check(self, check_name, lang):
         """
@@ -77,7 +76,7 @@ class Codechecker(object):
 
         url = self.BASE_URL + "check/create?name=" + check_name + "&language=" + str(lang)
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
 
     def list_checks(self):
         """
@@ -86,7 +85,7 @@ class Codechecker(object):
 
         url = self.BASE_URL + "checks"
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
 
     def upload(self, check_id, file_path):
         """
@@ -120,7 +119,7 @@ class Codechecker(object):
 
         url = self.BASE_URL + "check/start?check_id=" + str(check_id) + "?webcheck=1?dbcheck=1"
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
     
     def check_status(self, check_id):
         """
@@ -130,7 +129,7 @@ class Codechecker(object):
 
         url = self.BASE_URL + "check/get?check_id=" + str(check_id)
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
     
     def job_listen(self, check_id, callback):
         """
@@ -163,7 +162,7 @@ class Codechecker(object):
 
         url = self.BASE_URL + "check/overview?check_id=" + str(check_id)
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
+        return self._send(url)
 
     def get_detailed_results(self, check_id, submission_id):
         """
@@ -174,5 +173,19 @@ class Codechecker(object):
 
         url = self.BASE_URL + "check/results?check_id=" + str(check_id) + "&submission_id=" + str(submission_id)
 
-        return json.loads(self.session.post(url, headers=self.HEADERS).content)
-    
+        return self._send(url)
+
+    def _send(self, url):
+        """
+        Private method to actually post the data to Codequiry
+        """
+
+        try:
+            response = self.session.post(url, headers=self.HEADERS)
+        except requests.ConnectionError:
+            raise Exception("Cannot connect to Codequiry")
+        
+        try:
+            return json.loads(response.content)
+        except ValueError as e:
+            raise Exception("Cannot decode JSON")
