@@ -18,8 +18,9 @@ The methods are all documented with docstrings in the `codequiry.py` file, but t
 2. Upload files to the check: `cq.upload(CHECK_ID, FILE_PATH)` where `CHECK_ID` is the ID returned from step 1, and `FILE_PATH` is the path to a zip file.
 3. After the file is uploaded, start the check `cq.run_check(CHECK_ID)`
 4. Periodically monitor the status of the check with `cq.check_status(CHECK_ID)`
+5. You can get the overview of the results with `cq.get_overview(CHECK_ID)` or the detailed results with `cq.get_detailed_results(CHECK_ID)`
 
-You can get the account details and number of pro-checks remaining with `cq.get_account_details()`
+You can also get the account details and number of pro-checks remaining with `cq.get_account_details()`
 
 -----
 Matt Rudge<br/>
